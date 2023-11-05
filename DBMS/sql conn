@@ -1,0 +1,94 @@
+package MySQLConnectivity;
+
+import java.sql.*;
+import java.util.Scanner;
+
+public class MySQL {
+
+	public static void main(String[] args) throws Exception {
+		 int n, sno;
+		 String name, telephone, gender;
+		 Scanner in = new Scanner(System.in);
+		 Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/[Database]", "[Username]", "[password]");
+		 Statement stmt = con.createStatement();
+		 PreparedStatement pstm = con.prepareStatement("insert into Personal values(?,?,?,?)");
+		 PreparedStatement pstm1 = con.prepareStatement("delete from Personal where sno=?");
+		 PreparedStatement pstm2 = con.prepareStatement("update Personal set name=?, telephone=?, gender=? where sno=?");
+
+		 System.out.print("Enter the no of record you want to insert:");
+		 n = in.nextInt();
+		 for (int i = 0; i < n; i++) {
+			 System.out.print("\nData" + (i + 1) + "\nEnter Sno:");
+			 sno = in.nextInt();
+			 pstm.setInt(1, sno);
+			 System.out.print("Enter Name:");
+			 name = in.next();
+			 pstm.setString(2, name);
+			 System.out.print("Enter Telephone:");
+			 telephone = in.next();
+			 pstm.setString(3, telephone);
+			 System.out.print("Enter Gender:");
+			 gender = in.next();
+			 pstm.setString(4, gender);
+			 pstm.executeUpdate();
+		 }
+
+		 ResultSet rs = stmt.executeQuery("Select * from Personal;");
+		 System.out.println("\nAfter Insertion");
+		 System.out.println("Sno\tName\tTelephone\tGender");
+		 while (rs.next()) {
+			 System.out.println(rs.getInt(1) + "\t" + rs.getString(2) + "\t" + rs.getString(3) + "\t" + rs.getString(4));
+		 }
+
+		 // Search operation
+		 System.out.print("Enter Sno to search:");
+		 sno = in.nextInt();
+		 ResultSet rsSearch = stmt.executeQuery("Select * from Personal where sno=" + sno + ";");
+		 System.out.println("\nSearch Result");
+		 System.out.println("Sno\tName\tTelephone\tGender");
+		 while (rsSearch.next()) {
+			 System.out.println(rsSearch.getInt(1) + "\t" + rsSearch.getString(2) + "\t" + rsSearch.getString(3) + "\t" + rsSearch.getString(4));
+		 }
+
+		 // Update operation
+		 System.out.print("Enter Sno to update:");
+		 sno = in.nextInt();
+		 System.out.print("Enter new Name:");
+		 name = in.next();
+		 System.out.print("Enter new Telephone:");
+		 telephone = in.next();
+		 System.out.print("Enter new Gender:");
+		 gender = in.next();
+		 pstm2.setString(1, name);
+		 pstm2.setString(2, telephone);
+		 pstm2.setString(3, gender);
+		 pstm2.setInt(4, sno);
+		 pstm2.executeUpdate();
+
+		 ResultSet rsUpdate = stmt.executeQuery("Select * from Personal;");
+		 System.out.println("\nAfter Update");
+		 System.out.println("Sno\tName\tTelephone\tGender");
+		 while (rsUpdate.next()) {
+			 System.out.println(rsUpdate.getInt(1) + "\t" + rsUpdate.getString(2) + "\t" + rsUpdate.getString(3) + "\t" + rsUpdate.getString(4));
+		 }
+
+		 // Deletion
+		 System.out.print("Enter the no of record you want to delete:");
+		 n = in.nextInt();
+		 for (int i = 0; i < n; i++) {
+			 System.out.print("\nData" + (i + 1) + "\nEnter Sno:");
+			 sno = in.nextInt();
+			 pstm1.setInt(1, sno);
+			 pstm1.executeUpdate();
+		 }
+
+		 ResultSet rs1 = stmt.executeQuery("Select * from Personal;");
+		 System.out.println("\nAfter Deletion");
+		 System.out.println("Sno\tName\tTelephone\tGender");
+		 while (rs1.next()) {
+			 System.out.println(rs1.getInt(1) + "\t" + rs1.getString(2) + "\t" + rs1.getString(3) + "\t" + rs1.getString(4));
+		 }
+
+		 con.close();
+	}
+}
